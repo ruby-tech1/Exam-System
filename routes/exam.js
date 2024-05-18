@@ -3,6 +3,7 @@ const router = express.Router();
 // Import Authetication Middleware For routes
 const {checkRoleUser, checkRoleAdmin} = require('../middleware/checkRole');
 
+const {imageUpload,} = require('../controller/uploadFiles');
 const {
     getExamsUser,
     getExamUser,
@@ -22,5 +23,6 @@ router.route('/getExamsUser').get(checkRoleUser, getExamsUser);
 router.route('/getExamUser/:id').get(checkRoleUser, getExamUser);
 router.route('/getExamsAdmin').get(checkRoleAdmin, getExamsAdmin);
 router.route('/getExamAdmin/:id').get(checkRoleAdmin, getExamAdmin);
+router.route('/uploadImage').post(imageUpload)
 
 module.exports = router;

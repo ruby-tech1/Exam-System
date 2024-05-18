@@ -8,9 +8,44 @@ const {StatusCodes} = require('http-status-codes');
 const {NotFoundError, BadRequestError,} = require('../errors/index')
 
 const getExamsUser = async (req, res) => {
-    const exams = await Exam.find({ 
-        "users.userId": req.user.userId
-    }).select("_id name duration stopBy")
+
+    const {search, sort} = req.query
+
+    const queryObject = {
+        "users.userId": req.user.userId,
+    }
+
+    if(search){
+        queryObject.name = {$regex: search, $options: 'i'}
+    }
+
+    let result = Exam.find(queryObject)
+
+    result = result.select("_id name duration stopBy")
+
+    if(sort === 'latest'){
+        result = result.sort("-createdAt")
+    }
+
+    if(sort === 'oldest'){
+        result = result.sort("createdAt")
+    }
+
+    if(sort === 'a-z'){
+        result = result.sort("name")
+    }
+
+    if(sort === 'z-a'){
+        result = result.sort("-name")
+    }
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    result = result.skip(skip).limit(limit);
+
+    const exams = await result
 
     if(exams.length === 0){
         throw new NotFoundError('No Exam Found')
@@ -127,9 +162,43 @@ const endExam = async(req, res) => {
 }
 
 const getExamsAdmin = async(req, res) => {
-    const exams = await Exam.find({ 
+    const {search, sort} = req.query
+
+    const queryObject = {
         "createdBy": req.user.userId
-    }).select("-questions -users")
+    }
+
+    if(search){
+        queryObject.name = {$regex: search, $options: 'i'}
+    }
+
+    let result = Exam.find(queryObject)
+
+    result = result.select("-questions -users")
+
+    if(sort === 'latest'){
+        result = result.sort("-createdAt")
+    }
+
+    if(sort === 'oldest'){
+        result = result.sort("createdAt")
+    }
+
+    if(sort === 'a-z'){
+        result = result.sort("name")
+    }
+
+    if(sort === 'z-a'){
+        result = result.sort("-name")
+    }
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    result = result.skip(skip).limit(limit);
+
+    const exams = await result
 
     if(exams.length === 0){
         throw new NotFoundError('No Exam Found')

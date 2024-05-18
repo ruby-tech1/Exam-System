@@ -59,7 +59,7 @@ const examSchema = new mongoose.Schema({
     stopBy: {
         type: Date,
         required: [true, 'Please when the test will start'],
-        timezoneOffset: '+01:00'
+        // timezoneOffset: '+01:00'
     },
     numberOfQuestions: {
        type: Number,
