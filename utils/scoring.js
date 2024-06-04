@@ -1,51 +1,49 @@
-
 // arr1 = {
-    //     examId: '0123456789',
-    //     examName: 'Exam1',
-    //     ans: [
-    //         {
-    //             questionId: '13323232323',
-    //             ans: 'apple',
-    //             status: false,
-    //             cAns: 'Ball'
-    //         },
-    //         {
-    //             questionId: '13323232330',
-    //             ans: 'bapple',
-    //             status: true,
-    //             cAns: ''
-    //         },
-    //     ]
-    // }
+//     examId: '0123456789',
+//     examName: 'Exam1',
+//     ans: [
+//         {
+//             questionId: '13323232323',
+//             ans: 'apple',
+//             status: false,
+//             cAns: 'Ball'
+//         },
+//         {
+//             questionId: '13323232330',
+//             ans: 'bapple',
+//             status: true,
+//             cAns: ''
+//         },
+//     ]
+// }
 
-const scoreTest = (userAnswers, examQuestions) => {
-    let score = 0
-    const tempAns = userAnswers.reduce((total, ques) => {
-        const tempQuestion = examQuestions.find((temp) => {
-            return temp._id.toString() === ques.questionId
-        })
+const scoreTest = ({ userAnswers, examQuestions }) => {
+  let score = 0;
+  const tempAns = userAnswers.reduce((total, ques) => {
+    const tempQuestion = examQuestions.find((temp) => {
+      return temp._id.toString() === ques.questionId;
+    });
 
+    const push = {
+      questionId: ques.questionId,
+      ans: ques.ans,
+    };
 
-        const push = {
-            questionId: ques.questionId,
-            ans: ques.ans,
-        }
+    if (ques.ans !== tempQuestion.answer) {
+      push.status = false;
+      push.cAns = tempQuestion.answer;
+      total.push(push);
+      return total;
+    }
 
-        if(ques.ans !== tempQuestion.answer){
-            push.status = false;
-            push.cAns = tempQuestion.answer
-            total.push(push)
-            return total
-        }
+    push.status = true;
+    push.cAns = "";
+    score++;
 
-        push.status = true;
-        push.cAns = ''
-        score ++;
-        
-        total.push(push)
-        return total
-    }, [])
-    return [score, tempAns]
-}
+    total.push(push);
+    return total;
+  }, []);
+  return [score, tempAns];
+};
 
-module.exports = scoreTest
+module.exports = scoreTest;
