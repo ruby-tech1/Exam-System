@@ -13,6 +13,7 @@ const {
   getExamsAdmin,
   getExamAdmin,
   updateExam,
+  deleteExam,
 } = require("../controller/examController");
 
 router.route("/createExam").post(authorizePermissions("admin"), createExam);
@@ -28,5 +29,8 @@ router.route("/getExamUser/:id").get(authorizePermissions("user"), getExamUser);
 router
   .route("/getExamAdmin/:id")
   .get(authorizePermissions("admin"), getExamAdmin);
+router
+  .route("/deleteExam/:id")
+  .delete(authorizePermissions("admin"), deleteExam);
 
 module.exports = router;

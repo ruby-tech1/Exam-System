@@ -21,6 +21,7 @@ const connectDB = require("./db/connect");
 // Import Router
 const examRouter = require("./routes/examRouter");
 const authRouter = require("./routes/authRouter");
+const userRouter = require("./routes/userRouter");
 
 const autheticationMiddleware = require("./middleware/authetication");
 
@@ -36,7 +37,7 @@ app.use(fileUpload({ useTempFiles: true }));
 // Routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/exam", autheticationMiddleware, examRouter);
-// app.use('/api/v1/user', autheticationMiddleware, userRouter);
+app.use("/api/v1/user", autheticationMiddleware, userRouter);
 
 // Error Routes
 app.use(notFoundMiddleware);

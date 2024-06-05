@@ -251,6 +251,19 @@ const getExamAdmin = async (req, res) => {
   res.status(StatusCodes.OK).json({ exam });
 };
 
+const deleteExam = async (req, res) => {
+  const {
+    user: { userId },
+    params: { id: examId },
+  } = req;
+  const exam = await Exam.findOneAndDelete({ _id: examId, createdBy: userId });
+  if (!exam) {
+    throw new CustomError.NotFoundError(`No Exam with id ${examId} exist`);
+  }
+
+  res.status(StatusCodes.OK).json({ msg: "Deleted Exam" });
+};
+
 const updateExam = async (req, res) => {
   res.send("Exam Update Route");
 };
@@ -264,4 +277,5 @@ module.exports = {
   getExamsAdmin,
   getExamAdmin,
   updateExam,
+  deleteExam,
 };

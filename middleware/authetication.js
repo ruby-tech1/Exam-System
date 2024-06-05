@@ -9,8 +9,8 @@ const autheticationMiddleware = async (req, res, next) => {
   }
 
   try {
-    const payLoad = isTokenValid({ token });
-    req.user = { userId: payLoad.userId, role: payLoad.role };
+    const { userId, name, role } = isTokenValid({ token });
+    req.user = { userId, name, role };
     next();
   } catch (error) {
     throw new UnauthenticatedError("Authetication Invalid");
