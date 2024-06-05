@@ -1,3 +1,5 @@
+const CustomError = require("../errors/index");
+
 // arr1 = {
 //     examId: '0123456789',
 //     examName: 'Exam1',
@@ -24,6 +26,9 @@ const scoreTest = ({ userAnswers, examQuestions }) => {
       return temp._id.toString() === ques.questionId;
     });
 
+    if (!tempQuestion) {
+      throw new CustomError.BadRequestError("Inavlid Question");
+    }
     const push = {
       questionId: ques.questionId,
       ans: ques.ans,

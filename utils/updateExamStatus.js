@@ -1,7 +1,9 @@
-const Exam = require("../model/exam");
-const userStudent = require("../model/user-student");
-
-const updateUserExamStatus = async ({ userId, examId, status }) => {
+const updateUserExamStatus = async ({
+  userStudent,
+  userId,
+  examId,
+  status,
+}) => {
   await userStudent.findOneAndUpdate(
     { _id: userId },
     { $set: { "examStatus.$[e1].status": status } },
@@ -10,7 +12,14 @@ const updateUserExamStatus = async ({ userId, examId, status }) => {
   );
 };
 
-const updateExamStatus = async ({ userId, examId, status, Date1, Date2 }) => {
+const updateExamStatus = async ({
+  Exam,
+  userId,
+  examId,
+  status,
+  Date1,
+  Date2,
+}) => {
   await Exam.findOneAndUpdate(
     {
       _id: examId,
@@ -28,7 +37,7 @@ const updateExamStatus = async ({ userId, examId, status, Date1, Date2 }) => {
   );
 };
 
-const updateExamAns = async ({ userId, examId, status, ans }) => {
+const updateExamAns = async ({ Exam, userId, examId, status, ans }) => {
   await Exam.findOneAndUpdate(
     {
       _id: examId,
@@ -47,6 +56,7 @@ const updateExamAns = async ({ userId, examId, status, ans }) => {
 };
 
 const updateUserAnsweredExams = async ({
+  userStudent,
   userId,
   examId,
   ans,

@@ -119,6 +119,7 @@ const startExam = async (req, res) => {
   const Date2 = new Date(Date.now() + exam.duration * 1000);
 
   await utils.updateExamStatus({
+    Exam,
     userId: req.user.userId,
     examId: req.params.id,
     status: "Pending",
@@ -127,6 +128,7 @@ const startExam = async (req, res) => {
   });
 
   await utils.updateUserExamStatus({
+    userStudent,
     userId: req.user.userId,
     examId: req.params.id,
     status: "Pending",
@@ -163,6 +165,7 @@ const endExam = async (req, res) => {
   }
 
   await utils.updateUserExamStatus({
+    userStudent,
     userId: req.user.userId,
     examId: req.body.examId,
     status: "Taken",
@@ -174,6 +177,7 @@ const endExam = async (req, res) => {
   });
 
   await utils.updateExamAns({
+    Exam,
     userId: req.user.userId,
     examId: req.body.examId,
     status: "Taken",
@@ -181,6 +185,7 @@ const endExam = async (req, res) => {
   });
 
   const update = await utils.updateUserAnsweredExams({
+    userStudent,
     userId: req.user.userId,
     examId: req.body.examId,
     ans: ansArray,
