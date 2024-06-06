@@ -1,5 +1,6 @@
 const UserStudent = require("../model/user-student");
 const UserAdmin = require("../model/user-teacher");
+const { attachCookieToResponse, createTokenUser } = require("../utils/index");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors/index");
 
@@ -13,7 +14,21 @@ const showUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  res.send("Update User");
+  const { name, email, gender } = req.body;
+  if (!name || !email) {
+    throw new CustomError.BadRequestError("Provide Credentials");
+  }
+
+  const User = req.user.role === "admin" ? UserAdmin : UserStudent;
+  const user = await User.findOne({ _id: req.user.userId });
+  user.name = name;
+  user.email = email;
+  await user.save();
+
+  const tokenUser = createTokenUser({ user });
+  attachCookieToResponse({ res, tokenUser });
+
+  res.status(StatusCodes.OK).json({ msg: "Updated User" });
 };
 
 const updateUserPassword = async (req, res) => {

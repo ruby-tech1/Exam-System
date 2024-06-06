@@ -68,9 +68,7 @@ const examSchema = new mongoose.Schema(
       required: [true, "Please when the test will start"],
       validate: {
         validator: (date) => {
-          return date > new Date(Date.now() + 1000 * 60 * 60 * 10)
-            ? true
-            : false;
+          return date > new Date(Date.now() + 1000 * 60 * 10) ? true : false;
         },
         message: "Please provide a valid stop Date",
       },
@@ -87,20 +85,20 @@ const examSchema = new mongoose.Schema(
       type: String,
       required: [true, "Plese provide exam description"],
     },
-    // status: {
-    //     type: String,
-    //     enum: ['undeployed', 'deployed', 'expired'],
-    //     default: 'undeployed'
-    // },
+    status: {
+      type: String,
+      enum: ["undeployed", "deployed", "expired"],
+      default: "undeployed",
+    },
   },
   { timestamps: true }
 );
 
-examSchema.pre("save", function (next) {
+examSchema.pre("save", function () {
+  if (!this.isModified("stopBy")) return;
   const tempDate = new Date(this.stopBy);
   tempDate.setHours(tempDate.getHours() - 1);
   this.stopBy = tempDate;
-  next();
 });
 
 examSchema.methods.isExamValidStart = function (time1, time2, status) {

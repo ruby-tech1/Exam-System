@@ -4,7 +4,6 @@ const createToken = ({ payload }) => {
   return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
   });
-  // { userId: this._id, role: this.role },
 };
 
 const isTokenValid = ({ token }) => {

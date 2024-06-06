@@ -14,11 +14,15 @@ const {
   getExamAdmin,
   updateExam,
   deleteExam,
+  deployExam,
 } = require("../controller/examController");
 
 router.route("/createExam").post(authorizePermissions("admin"), createExam);
 router.route("/endExam").post(authorizePermissions("user"), endExam);
 router.route("/updateExam").patch(authorizePermissions("admin"), updateExam);
+router
+  .route("/deployExam/:id")
+  .patch(authorizePermissions("admin"), deployExam);
 router.route("/getExamsUser").get(authorizePermissions("user"), getExamsUser);
 router
   .route("/getExamsAdmin")

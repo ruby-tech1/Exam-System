@@ -5,6 +5,7 @@ const {
   updateUserAnsweredExams,
 } = require("../utils/updateExamStatus");
 const scoring = require("../utils/scoring");
+const createTokenUser = require("./createTokenUser");
 const { createToken, isTokenValid, attachCookieToResponse } = require("./jwt");
 
 module.exports = {
@@ -16,4 +17,5 @@ module.exports = {
   createToken,
   isTokenValid,
   attachCookieToResponse,
+  createTokenUser,
 };

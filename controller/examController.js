@@ -10,6 +10,7 @@ const getExamsUser = async (req, res) => {
 
   const queryObject = {
     "users.userId": req.user.userId,
+    status: "deployed",
   };
 
   if (search) {
@@ -55,6 +56,7 @@ const getExamUser = async (req, res) => {
   const exam = await Exam.findOne({
     _id: req.params.id,
     "users.userId": req.user.userId,
+    status: "deployed",
   }).select("_id name duration stopBy examDescription");
 
   if (!exam) {
@@ -88,6 +90,7 @@ const startExam = async (req, res) => {
   const exam = await Exam.findOne({
     _id: req.params.id,
     "users.userId": req.user.userId,
+    status: "deployed",
   }).select("-users");
 
   if (!exam) {
@@ -269,6 +272,27 @@ const deleteExam = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: "Deleted Exam" });
 };
 
+const deployExam = async (req, res) => {
+  const exam = await Exam.findOneAndUpdate(
+    {
+      _id: req.params.id,
+      createdBy: req.user.userId,
+    },
+    { status: "deployed" },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  if (!exam) {
+    throw new CustomError.NotFoundError(
+      `No exam with id ${req.params.id} exist`
+    );
+  }
+
+  res.status(StatusCodes.OK).json({ msg: "Deployed!" });
+};
+
 const updateExam = async (req, res) => {
   res.send("Exam Update Route");
 };
@@ -283,4 +307,5 @@ module.exports = {
   getExamAdmin,
   updateExam,
   deleteExam,
+  deployExam,
 };
