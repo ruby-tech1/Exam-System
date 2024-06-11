@@ -5,36 +5,30 @@ const { authorizePermissions } = require("../middleware/checkRole");
 
 const { imageUpload } = require("../controller/uploadFiles");
 const {
-  getExamsUser,
-  getExamUser,
+  getAllExams,
+  getSingleExam,
   createExam,
   startExam,
   endExam,
-  getExamsAdmin,
-  getExamAdmin,
   updateExam,
   deleteExam,
   deployExam,
 } = require("../controller/examController");
 
+router.route("/").get(getAllExams);
 router.route("/createExam").post(authorizePermissions("admin"), createExam);
+
 router.route("/endExam").post(authorizePermissions("user"), endExam);
-router.route("/updateExam").patch(authorizePermissions("admin"), updateExam);
+router.route("/uploadImage").post(authorizePermissions("admin"), imageUpload);
+
 router
-  .route("/deployExam/:id")
-  .patch(authorizePermissions("admin"), deployExam);
-router.route("/getExamsUser").get(authorizePermissions("user"), getExamsUser);
-router
-  .route("/getExamsAdmin")
-  .get(authorizePermissions("admin"), getExamsAdmin);
-router.route("/uploadImage").post(authorizePermissions("user"), imageUpload);
-router.route("/startExam/:id").get(authorizePermissions("user"), startExam);
-router.route("/getExamUser/:id").get(authorizePermissions("user"), getExamUser);
-router
-  .route("/getExamAdmin/:id")
-  .get(authorizePermissions("admin"), getExamAdmin);
-router
-  .route("/deleteExam/:id")
+  .route("/:id")
+  .get(getSingleExam)
+  .patch(authorizePermissions("admin"), updateExam)
   .delete(authorizePermissions("admin"), deleteExam);
+router.route("/:id/startExam").get(authorizePermissions("user"), startExam);
+router
+  .route("/:id/deployExam")
+  .patch(authorizePermissions("admin"), deployExam);
 
 module.exports = router;

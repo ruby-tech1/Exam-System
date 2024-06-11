@@ -3,44 +3,12 @@ const answerSchema = require("./answer");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
 
-const examStatusSchema = new mongoose.Schema({
-  examID: {
-    type: mongoose.Types.ObjectId,
-    ref: "Exam",
-    required: ["true", "Please provide Exam Id"],
-  },
-  status: {
-    type: String,
-    enum: ["Not Taken", "Pending", "Taken"],
-    default: "Not Taken",
-  },
-});
-
-const answeredExamsSchema = new mongoose.Schema({
-  examID: {
-    type: mongoose.Types.ObjectId,
-    ref: "Exam",
-    required: ["true", "Please provide Exam Id"],
-  },
-  answer: {
-    type: [answerSchema],
-    required: [true, "Please provide answers"],
-  },
-  score: {
-    type: Number,
-    default: 0,
-  },
-  numberOfQuestions: {
-    type: Number,
-    required: [true, "Please provide nubmer of questions"],
-  },
-});
-
 const UserSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, "Please provide Name"],
+      trim: true,
       minlength: 5,
       maxlength: 50,
     },
@@ -68,17 +36,24 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Please provide Gender"],
       enum: ["male", "female"],
     },
-    examStatus: {
-      type: [examStatusSchema],
-      default: [],
-    },
-    answeredExams: {
-      type: [answeredExamsSchema],
-      default: [],
-    },
+    // examStatus: {
+    //   type: [examStatusSchema],
+    //   default: [],
+    // },
+    // answeredExams: {
+    //   type: [answeredExamsSchema],
+    //   default: [],
+    // },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+UserSchema.virtual("exams", {
+  ref: "UserAttempt",
+  localField: "_id",
+  foreignField: "userId",
+  justOne: false,
+});
 
 UserSchema.pre("save", async function () {
   if (!this.isModified("password")) return;

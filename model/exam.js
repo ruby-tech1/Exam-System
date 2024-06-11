@@ -2,40 +2,12 @@ const mongoose = require("mongoose");
 const questionSchema = require("./question");
 const answerSchema = require("./answer");
 
-const userAuthSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Types.ObjectId,
-    required: [true, "Please provide User Id"],
-    ref: "User",
-  },
-  score: {
-    type: Number,
-    default: 0,
-  },
-  status: {
-    type: String,
-    enum: ["Not Taken", "Pending", "Taken"],
-    default: "Not Taken",
-  },
-  ans: {
-    type: [answerSchema],
-    default: [],
-  },
-  startTime: {
-    type: Date,
-    default: "",
-  },
-  stopTime: {
-    type: Date,
-    default: "",
-  },
-});
-
 const examSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, "Please Provide Name"],
+      trim: true,
       minlength: 5,
       maxlength: 50,
     },
@@ -44,10 +16,14 @@ const examSchema = new mongoose.Schema(
       required: [true, "Please provide a user ID"],
       ref: "Admin",
     },
-    users: {
-      type: [userAuthSchema],
-      required: [true, "Please provide User for this test"],
-    },
+    // users: {
+    //   type: [userAuthSchema],
+    //   required: [true, "Please provide users for this test"],
+    //   validate: {
+    //     validator: (arr) => (arr.length === 0 ? false : true),
+    //     message: "Please provide users for this test",
+    //   },
+    // },
     duration: {
       type: Number,
       required: [true, "Please provide a time duration"],
@@ -75,11 +51,15 @@ const examSchema = new mongoose.Schema(
     },
     numberOfQuestions: {
       type: Number,
-      required: [true, "Please provide nubmer of questions"],
+      required: [true, "Please provide number of questions"],
     },
     questions: {
       type: [questionSchema],
       required: [true, "Please provide questions"],
+      validate: {
+        validator: (arr) => (arr.length === 0 ? false : true),
+        message: "Please provide questions for this test",
+      },
     },
     examDescription: {
       type: String,
@@ -91,8 +71,16 @@ const examSchema = new mongoose.Schema(
       default: "undeployed",
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+examSchema.virtual("users", {
+  ref: "UserAttempt",
+  localField: "_id",
+  foreignField: "examId",
+  select: "-password",
+  justOne: false,
+});
 
 examSchema.pre("save", function () {
   if (!this.isModified("stopBy")) return;

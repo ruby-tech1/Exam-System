@@ -48,6 +48,7 @@ const scoreTest = ({ userAnswers, examQuestions }) => {
     total.push(push);
     return total;
   }, []);
+
   return [score, tempAns];
 };
 

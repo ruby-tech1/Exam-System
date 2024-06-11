@@ -1,12 +1,32 @@
 const UserStudent = require("../model/user-student");
 const UserAdmin = require("../model/user-teacher");
-const { attachCookieToResponse, createTokenUser } = require("../utils/index");
+const {
+  attachCookieToResponse,
+  createTokenUser,
+  checkPermissions,
+} = require("../utils/index");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors/index");
 
 const getAllUsers = async (req, res) => {
   const users = await UserStudent.find().select("name email gender");
   res.status(StatusCodes.OK).json({ users });
+};
+
+const getSingleUser = async (req, res) => {
+  const {
+    params: { id: userId },
+  } = req;
+  const User = req.user.role === "admin" ? UserAdmin : UserStudent;
+  const user = await User.findOne({ _id: userId }).select("-password");
+  if (!user) {
+    throw new CustomError.NotFoundError(
+      `No user with id ${req.params.id} was found`
+    );
+  }
+
+  checkPermissions(req.user, user._id);
+  res.status(StatusCodes.OK).json({ user });
 };
 
 const showUser = async (req, res) => {
@@ -56,4 +76,5 @@ module.exports = {
   showUser,
   updateUser,
   updateUserPassword,
+  getSingleUser,
 };

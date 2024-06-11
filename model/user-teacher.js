@@ -7,6 +7,7 @@ const adminSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, "Please provide Name"],
+      trim: true,
       minlength: 5,
       maxlength: 50,
     },
