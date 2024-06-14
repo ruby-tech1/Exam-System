@@ -31,7 +31,7 @@ const autheticationMiddleware = require("./middleware/authetication");
 const notFoundMiddleware = require("./middleware/error-handler");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 
-app.use("trust proxy", 1);
+app.set("trust proxy", 1);
 app.use(express.json());
 // app.use(morgan("tiny"));
 app.use(cors());
