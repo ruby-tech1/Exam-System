@@ -28,7 +28,7 @@ const userRouter = require("./routes/userRouter");
 const autheticationMiddleware = require("./middleware/authetication");
 
 // Import Error Middleware
-const notFoundMiddleware = require("./middleware/error-handler");
+const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 
 app.set("trust proxy", 1);
