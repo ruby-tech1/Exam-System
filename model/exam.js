@@ -83,6 +83,7 @@ examSchema.virtual("users", {
 });
 
 examSchema.pre("save", function () {
+  // this.numberOfQuestions = this.questions.length;
   if (!this.isModified("stopBy")) return;
   const tempDate = new Date(this.stopBy);
   tempDate.setHours(tempDate.getHours() - 1);

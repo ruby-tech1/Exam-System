@@ -57,24 +57,33 @@ const getAllExams = async (req, res) => {
 };
 
 const getSingleExam = async (req, res) => {
-  const attempt = await Attempt.findOne({ userId: req.user.userId });
+  const { role } = req.user;
   const queryObject = {
     _id: req.params.id,
   };
-  let result = Exam.findOne(queryObject);
 
-  if (req.user.role === "admin") {
+  if (role === "admin") {
     queryObject.createdBy = req.user.userId;
   }
-  if (req.user.role === "user") {
+
+  if (role === "user") {
+    const attempt = await Attempt.findOne({
+      userId: req.user.userId,
+      examId: req.params.id,
+    });
     if (!attempt) {
       throw new CustomError.UnauthorizedError(
         `Unauthorized to access this exam`
       );
     }
     queryObject.status = "deployed";
-    result.select("_id name duration stopBy examDescription");
   }
+
+  let result = Exam.findOne(queryObject);
+
+  if (role === "admin") result.populate("users");
+  if (role === "user")
+    result.select("_id name duration stopBy examDescription");
 
   const exam = await result;
   if (!exam) {
@@ -82,13 +91,14 @@ const getSingleExam = async (req, res) => {
       `No exam with id ${req.params.id} was found`
     );
   }
+
   res.status(StatusCodes.OK).json({ exam });
 };
 
 const createExam = async (req, res) => {
   const { name, users, duration, startBy, stopBy, questions, examDescription } =
     req.body;
-  const numberOfQuestions = questions.length;
+  // const numberOfQuestions = questions.length;
   const createdBy = req.user.userId;
 
   let exam = await Exam.create({
@@ -252,7 +262,69 @@ const deployExam = async (req, res) => {
 };
 
 const updateExam = async (req, res) => {
-  res.send("Exam Update Route");
+  const { name, users, duration, stopBy, questions, examDescription } =
+    req.body;
+
+  let exam = await Exam.findOne({
+    _id: req.params.id,
+    createdBy: req.user.userId,
+  }).populate("users");
+
+  let queryObject = {};
+
+  if (!exam) {
+    throw new CustomError.NotFoundError(
+      `No exam with id ${req.params.id} exist`
+    );
+  }
+
+  if (name) {
+    queryObject.name = name;
+  }
+
+  if (duration) {
+    queryObject.duration = duration;
+  }
+
+  if (stopBy) {
+    queryObject.stopBy = stopBy;
+  }
+
+  if (examDescription) {
+    queryObject.examDescription = examDescription;
+  }
+
+  if (questions) {
+    queryObject.questions = questions;
+    queryObject.numberOfQuestions = questions.length;
+  }
+
+  const newExam = await Exam.findOneAndUpdate(
+    { _id: req.params.id, createdBy: req.user.userId },
+    queryObject,
+    { new: true, runValidators: true }
+  );
+
+  if (users) {
+    const newUsers = [];
+    for (const item of users) {
+      const user = exam.users.find(
+        (user) => user.userId.toString() === item.userId
+      );
+      if (!user) {
+        newUsers.push(item);
+      }
+    }
+    for (const item of newUsers) {
+      await Attempt.create({
+        userId: item.userId,
+        examId: exam._id,
+        numberOfQuestions: questions.length,
+      });
+    }
+  }
+
+  res.status(StatusCodes.OK).json({ newExam });
 };
 
 module.exports = {

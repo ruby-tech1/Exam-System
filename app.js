@@ -20,6 +20,9 @@ cloudinary.config({
 // Import Database connect
 const connectDB = require("./db/connect");
 
+//Import cron-jobs
+const scheduleTask = require("./cron-jobs/index");
+
 // Import Router
 const examRouter = require("./routes/examRouter");
 const authRouter = require("./routes/authRouter");
@@ -60,6 +63,7 @@ const start = async () => {
     app.listen(port, () => {
       console.log(`Server listening on port ${port}...`);
     });
+    scheduleTask();
   } catch (error) {
     console.log(error);
   }
