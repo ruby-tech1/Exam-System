@@ -21,7 +21,7 @@ cloudinary.config({
 const connectDB = require("./db/connect");
 
 //Import cron-jobs
-const scheduleTask = require("./cron-jobs/index");
+const scheduleTask = require("./cron-jobs/main");
 
 // Import Router
 const examRouter = require("./routes/examRouter");

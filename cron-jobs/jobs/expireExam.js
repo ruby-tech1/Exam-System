@@ -1,5 +1,5 @@
-const Exam = require("../model/exam");
-const Attempt = require("../model/examAttempt");
+const Exam = require("../../model/exam");
+const Attempt = require("../../model/examAttempt");
 
 const expireExamJob = async () => {
   console.log("cron");
